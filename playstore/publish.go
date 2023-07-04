@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
+	"github.com/mitchellh/ioprogress"
 	"github.com/spf13/afero"
 )
 
@@ -129,7 +131,6 @@ func (p *publish) UploadFiles(gs IGService) error {
 
 		v, err := p.upload(gs, f.filePath, edit, p.apk)
 		if err != nil {
-			fmt.Println(v)
 			gs.deleteEdit(p.packageName, edit)
 			return err
 		}
@@ -145,6 +146,7 @@ func (p *publish) UploadFiles(gs IGService) error {
 		}
 	}
 
+	p.Debugf("validating app submittion")
 	if err := gs.validateEdit(p.packageName, edit); err != nil {
 		gs.deleteEdit(p.packageName, edit)
 		return err
@@ -174,12 +176,19 @@ func (p *publish) upload(us IUploadService, filePath, editId string, isApk bool)
 		return -1, fmt.Errorf("failed calculating '%s' sha256 hash: %w", filePath, err)
 	}
 
+	pReader := &ioprogress.Reader{
+		Reader:       f,
+		Size:         p.fileSize(filePath),
+		DrawFunc:     ioprogress.DrawTerminalf(log.Writer(), ioprogress.DrawTextFormatBytes),
+		DrawInterval: 3 * time.Second,
+	}
+
 	uplF := us.uploadBundle
 	if isApk {
 		uplF = us.uploadApk
 	}
 
-	v, sha256, err := uplF(f, p.packageName, editId)
+	v, sha256, err := uplF(pReader, p.packageName, editId)
 	if err != nil {
 		return -1, err
 	}

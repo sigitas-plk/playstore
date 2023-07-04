@@ -20,6 +20,14 @@ func (p *publish) fileExits(file string) bool {
 	return false
 }
 
+func (p *publish) fileSize(file string) int64 {
+	s, err := p.fs.Stat(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return s.Size()
+}
+
 func fileSha256(r io.ReadSeeker) (string, error) {
 	h := sha256.New()
 	if _, err := io.Copy(h, r); err != nil {

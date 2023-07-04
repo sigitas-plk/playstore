@@ -3,6 +3,7 @@ module github.com/sigitas-plk/playstore
 go 1.20
 
 require (
+	github.com/mitchellh/ioprogress v0.0.0-20180201004757-6a23b12fa88e
 	github.com/spf13/afero v1.9.5
 	github.com/spf13/cobra v1.7.0
 	google.golang.org/api v0.128.0

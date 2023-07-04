@@ -1,0 +1,6 @@
+*secret* 
+tmp
+build
+*.aab
+*.apk
+.vscode 

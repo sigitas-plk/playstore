@@ -11,6 +11,10 @@ import (
 	"github.com/spf13/afero"
 )
 
+const (
+	uploadProgressDrawInterval = 3 * time.Second
+)
+
 // binary aab or apk file and its mappings path
 type binary struct {
 	filePath    string
@@ -180,7 +184,7 @@ func (p *publish) upload(us IUploadService, filePath, editId string, isApk bool)
 		Reader:       f,
 		Size:         p.fileSize(filePath),
 		DrawFunc:     ioprogress.DrawTerminalf(log.Writer(), ioprogress.DrawTextFormatBytes),
-		DrawInterval: 3 * time.Second,
+		DrawInterval: uploadProgressDrawInterval,
 	}
 
 	uplF := us.uploadBundle

@@ -28,6 +28,7 @@ func (p *publish) fileSize(file string) int64 {
 	return s.Size()
 }
 
+// TODO: must be better way to do this
 func fileSha256(r io.ReadSeeker) (string, error) {
 	h := sha256.New()
 	if _, err := io.Copy(h, r); err != nil {
